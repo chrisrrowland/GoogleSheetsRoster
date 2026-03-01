@@ -1,4 +1,12 @@
 {
   "sheetTsvUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUYjFm3EuoCQm2YdWCr5kgvDyZwAbHm0IUL4s81c41Q7lSn139fNU7z1UC_kb45XvHYrdo1CmT6ft0/pub?gid=1599317520&single=true&output=tsv",
-  "leagueName": "Vigilante Baseball"
+  "leagueName": "Vigilante Baseball",
+  "theme": {
+    "primaryBg": "#0f172a",
+    "cardBg": "#1e293b",
+    "accentBlue": "#60a5fa",
+    "borderSlate": "#334155",
+    "textMain": "#ffffff",
+    "textMuted": "#94a3b8"
+  }
 }

@@ -30,28 +30,257 @@
       }
     </script>
 
+    <script>
+        // Team Color Dictionary
+        const MLB_COLORS = {
+            'ARI': '#A71930', 'ATL': '#CE1141', 'BAL': '#DF4601', 'BOS': '#BD3039',
+            'CHC': '#0E3386', 'CWS': '#27251F', 'CIN': '#C6011F', 'CLE': '#00385D',
+            'COL': '#333366', 'DET': '#0C2340', 'HOU': '#EB6E1F', 'KC':  '#004687',
+            'LAA': '#BA0021', 'LAD': '#005A9C', 'MIA': '#00A3E0', 'MIL': '#12284B',
+            'MIN': '#002B5C', 'NYM': '#002D72', 'NYY': '#003087', 'OAK': '#003831',
+            'PHI': '#E81828', 'PIT': '#27251F', 'SD':  '#2F241D', 'SF':  '#FD5A1E',
+            'SEA': '#005C5C', 'STL': '#C41E3A', 'TB':  '#092C5C', 'TEX': '#003278',
+            'TOR': '#134A8E', 'WSH': '#AB0003'
+        };
+
+        // Optional: Add secondary colors if you want borders or text to vary
+        const POS_COLORS = {
+            // Pitchers (Gray/Steel)
+            'P': '#4B5563', 'SP': '#4B5563', 'RP': '#4B5563',
+            // Infield (Purple/Indigo)
+            'C': '#059669', // Catcher usually gets a unique color (Green)
+            '1B': '#7C3AED', '2B': '#7C3AED', '3B': '#7C3AED', 'SS': '#7C3AED', 'IF': '#7C3AED',
+            // Outfield (Pink/Rose)
+            'OF': '#DB2777', 'LF': '#DB2777', 'CF': '#DB2777', 'RF': '#DB2777',
+            // Utility (Orange)
+            'DH': '#EA580C', 'UTIL': '#EA580C'
+        };
+    </script>
+
     <style>
-        /* Custom Dark Mode Styling for Grid.js to match Tailwind's gray-900 */
-        .gridjs { font-family: 'Roboto', sans-serif !important; }
-        .gridjs-wrapper { border-radius: 8px; border: none; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
-        .gridjs-container { padding: 0; background-color: transparent; }
-        
-        .gridjs-td { background-color: #1f2937; color: #e5e7eb; border: 1px solid #374151; }
-        .gridjs-th { background-color: #111827; color: #60a5fa; border: 1px solid #374151; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
-        
-        .gridjs-search-input { 
-            background-color: #374151; 
-            color: white; 
-            border: 1px solid #4b5563; 
-            border-radius: 6px; 
-            padding: 10px 15px;
+        /* ============================================================
+        0. THEME VARIABLES (Injected from config.json)
+        ============================================================ */
+        :root {
+            --primary-bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #60a5fa;
+            --border: #334155;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
         }
-        .gridjs-search-input:focus { border-color: #60a5fa; outline: none; }
-        
-        .gridjs-footer { background-color: #111827; border: 1px solid #374151; color: #9ca3af; }
-        .gridjs-pagination .gridjs-pages button { background-color: #374151; color: white; border: 1px solid #4b5563; }
-        .gridjs-pagination .gridjs-pages button:hover { background-color: #4b5563; }
-        .gridjs-pagination .gridjs-pages button:disabled { background-color: #1f2937; color: #6b7280; }
+
+        /* ============================================================
+        1. GLOBAL RESET & LAYOUT
+        ============================================================ */
+        body { 
+            background-color: var(--primary-bg); 
+            color: var(--text-main); 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0;
+            padding: 0;
+        }
+
+        /* KILL WHITE BACKGROUNDS: Force every Grid.js container to be transparent */
+        .gridjs-container, 
+        .gridjs-wrapper, 
+        .gridjs-table, 
+        .gridjs-head, 
+        .gridjs-footer, 
+        .gridjs-tbody,
+        .gridjs-tr {
+            background-color: transparent !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix the "Teeny Tiny Column" bug when resizing */
+        .gridjs-table {
+            table-layout: fixed !important; /* Switch back to fixed to respect your JS widths */
+            width: 100% !important;
+            min-width: 100%;
+        }
+
+        /* ============================================================
+        2. DESKTOP TABLE STYLING
+        ============================================================ */
+        .gridjs-td {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border) !important;
+            font-size: 0.95rem;
+            padding: 12px 15px !important;
+        }
+
+        .gridjs-th {
+            background-color: var(--primary-bg) !important;
+            color: var(--accent) !important;
+            border: 1px solid var(--border) !important;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            padding: 12px 15px !important;
+        }
+
+        /* Prevent header text from truncating/disappearing */
+        .gridjs-th-content {
+            white-space: normal !important;
+            overflow: visible !important;
+        }
+
+        /* Hover effect for desktop rows */
+        .gridjs-tr:hover .gridjs-td {
+            background-color: var(--border) !important; 
+        }
+
+        /* ============================================================
+        3. SEARCH BAR STYLING
+        ============================================================ */
+        .gridjs-search {
+            width: 100% !important;
+            float: none !important;
+            padding: 0 0 10px 0 !important;
+        }
+
+        .gridjs-search-input {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 2px solid var(--border) !important;
+            border-radius: 8px !important;
+            padding: 10px 15px !important;
+            width: 100% !important; 
+            font-size: 14px !important;
+        }
+
+        .gridjs-search-input:focus {
+            border-color: var(--accent) !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        /* ============================================================
+        4. UNIFIED PILL SYSTEM (CONNECTED GROUP)
+        ============================================================ */
+        .base-pill {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 42px !important; 
+            height: 22px !important;
+            font-size: 10px;
+            font-weight: 800;
+            color: white !important;
+            text-transform: uppercase;
+            flex-shrink: 0 !important;
+            margin: 0 !important;
+            border-radius: 6px; /* Default rounding */
+        }
+
+        .pos-pill + .pos-pill {
+            border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Rounding logic for connected pills */
+        .pill-first { border-radius: 6px 0 0 6px; }
+        .pill-last  { border-radius: 0 6px 6px 0; }
+
+        .pos-pill:not(.pill-first):not(.pill-last):not(.pill-solo) {
+            border-radius: 0 !important;
+        }
+
+        .org-pill {
+            /* Explicitly keeping this standalone and fully rounded */
+            border-radius: 6px !important;
+            border-left: none !important;
+        }
+
+        /* The "Sledgehammer" to prevent pills from wrapping */
+        .gridjs-td:nth-child(2) {
+            width: 250px !important; /* Matches your JS width */
+            min-width: 250px !important; /* Prevents it from starting "too narrow" */
+            white-space: nowrap !important;
+        }
+        .gridjs-td:nth-child(2) .gridjs-td-content {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: flex-start; /* Keeps them left-aligned in the cell */
+            width: 100% !important;
+        }
+
+        .gridjs-td:nth-child(3) .gridjs-td-content {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: max-content !important;
+        }
+
+        /* ============================================================
+        5. MOBILE/TABLET RESPONSIVE (STACKED VIEW)
+        ============================================================ */
+        @media (max-width: 1024px) {
+            /* Hide table headers in card mode */
+            .gridjs-thead { display: none !important; }
+
+            /* Turn the row into a grid card */
+            .gridjs-tr {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr; 
+                padding: 12px 8px !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--border) !important;
+                margin-bottom: 12px !important;
+                border-radius: 12px !important;
+                /* Give the card a bit of a lift */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+            }
+
+            /* Default cell cleanup */
+            .gridjs-td {
+                border: none !important;
+                background: transparent !important;
+                display: block !important;
+                padding: 4px 10px !important;
+            }
+
+            /* FORCE Pos and Org to stay horizontal and right-aligned on the card */
+            .gridjs-td:nth-child(2), 
+            .gridjs-td:nth-child(3) { 
+                display: flex !important; 
+                justify-content: flex-end !important; 
+                grid-column: 2; /* Right column of the card */
+            }
+
+            /* Player Name Header in Card */
+            .gridjs-td:nth-child(1) { 
+                grid-column: 1;
+                font-weight: 700 !important;
+                font-size: 1.1rem;
+            }
+
+            /* Team Name Subtext in Card */
+            .gridjs-td:nth-child(4) { 
+                grid-column: 1; 
+                grid-row: 2; 
+                color: var(--text-muted) !important;
+                font-size: 0.9rem;
+                font-style: italic;
+                padding-top: 8px !important;
+            }
+        }
+
+        /* ============================================================
+        6. FOOTER / PAGINATION
+        ============================================================ */
+        .gridjs-footer {
+            border-top: 2px solid var(--border) !important;
+            padding: 15px 0 !important;
+        }
+
+        .gridjs-pagination .gridjs-summary {
+            color: var(--text-muted) !important;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4 md:p-8 font-sans">
@@ -61,10 +290,11 @@
             <h1 id="league-title" class="text-4xl font-bold tracking-tight text-white mb-2 underline decoration-blue-500 decoration-4 underline-offset-8">
                 League Rosters
             </h1>
-            <div id="status-container" class="mt-4">
+            <div id="status-container" class="mt-4 flex flex-col items-center gap-2">
                 <span id="status" class="inline-block px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-blue-900/30 text-blue-400 border border-blue-800">
                     Connecting to Data Source...
                 </span>
+                <span id="last-updated" class="text-[10px] text-slate-500 font-mono uppercase tracking-tight"></span>
             </div>
         </header>
 
@@ -72,14 +302,28 @@
     </div>
 
     <script>
+
+        // Settings
+        let HIDE_EMPTY_SLOTS = true; // Set to false to show "Empty" rows
+        const EMPTY_TEXT = "Empty";
         /**
          * 1. INITIALIZE DATA FETCH
          */
         async function init() {
         try {
-            const configResponse = await fetch('config.json');
+            const configResponse = await fetch(`config.json?v=${new Date().getTime()}`);
             const config = await configResponse.json();
             
+            if (config.theme) {
+                const root = document.documentElement;
+                root.style.setProperty('--primary-bg', config.theme.primaryBg);
+                root.style.setProperty('--card-bg', config.theme.cardBg);
+                root.style.setProperty('--accent', config.theme.accentBlue);
+                root.style.setProperty('--border', config.theme.borderSlate);
+                root.style.setProperty('--text-main', config.theme.textMain);
+                root.style.setProperty('--text-muted', config.theme.textMuted);
+            }
+
             // Update Title
             document.title = config.leagueName;
             document.getElementById('league-title').innerText = config.leagueName;
@@ -90,10 +334,32 @@
                 delimiter: "\t",
                 skipEmptyLines: true,
                 complete: function(results) {
-                    // Logic: Only keep rows where "Player" has text
-                    const cleanData = results.data.filter(row => row.Player && row.Player.trim() !== "");
+                    let cleanData = results.data.filter(row => row.Player && row.Player.trim() !== "");
+
+                    // Advanced Filtering: Hide placeholders
+                    if (HIDE_EMPTY_SLOTS) {
+                        cleanData = cleanData.filter(row => {
+                            const isNameEmpty = row.Player.trim() === EMPTY_TEXT;
+                            const isPosBlank = !row.Pos || row.Pos.trim() === "" || row.Pos === "---";
+                            const isOrgBlank = !row.Org || row.Org.trim() === "" || row.Org === "---";
+
+                            // Only hide if it's an "Empty" name AND has no Pos/Org data
+                            // We return "true" to KEEP the row, so we use the NOT (!) operator
+                            return !(isNameEmpty && isPosBlank && isOrgBlank);
+                        });
+                    }
+
                     renderTable(cleanData);
+                    
+                    // Update Status Badge
                     document.getElementById('status').innerText = "✓ Data Live";
+                    
+                    // Create Timestamp
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const dateString = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    
+                    document.getElementById('last-updated').innerText = `Last Sync: ${dateString} @ ${timeString}`;
                 }
             });
         } catch (err) {
@@ -107,21 +373,90 @@
          */
         function renderTable(data) {
             new gridjs.Grid({
+                search: {
+                    enabled: true,
+                    placeholder: '🔍 Search players, teams, or positions...'
+                },
+                // Update the sort section here:
+                sort: {
+                    multiColumn: false,
+                    server: false,
+                    initSort: {
+                        column: 0,     // 0 = Player, 1 = Pos, 2 = Org, 3 = Team
+                        direction: -1  // 1 for Ascending (A-Z), -1 for Descending (Z-A)
+                    }
+                },
+                pagination: {
+                    limit: 25,
+                    summary: true
+                },
                 columns: [
-                    { name: "Player", width: "35%" },
-                    { name: "Pos", width: "15%" },
-                    { name: "Org", width: "15%" },
-                    { name: "Team", width: "35%" }
+                    { 
+                        name: "Player", 
+                        width: "200px",
+                        formatter: (cell) => gridjs.html(`<span class="font-bold text-white">${cell}</span>`)
+                    },
+                    { 
+                        name: "Pos", 
+                        width: "240px",
+                        formatter: (cell) => {
+                            if (!cell) return "";
+                            const positions = cell.split(/[/,]/).map(p => p.trim());
+                            
+                            return gridjs.html(positions.map((pos, i, arr) => {
+                                const bg = POS_COLORS[pos] || '#4B5563';
+                                
+                                // Logic to pick the right rounding class
+                                let roundingClass = "";
+                                if (arr.length === 1) {
+                                    roundingClass = "pill-solo";
+                                } else if (i === 0) {
+                                    roundingClass = "pill-first";
+                                } else if (i === arr.length - 1) {
+                                    roundingClass = "pill-last";
+                                }
+
+                                return `<span class="base-pill pos-pill ${roundingClass}" style="background-color: ${bg}">${pos}</span>`;
+                            }).join(''));
+                        },
+                        sort: {
+                            compare: (a, b) => {
+                                // 1. Calculate "Utility Count" by splitting string
+                                const countA = a ? a.split(/[/,]/).length : 0;
+                                const countB = b ? b.split(/[/,]/).length : 0;
+
+                                if (countA !== countB) {
+                                    // Sort by count (Descending: most positions first)
+                                    return countB - countA; 
+                                }
+
+                                // 2. Fallback: Alphabetical if counts are the same
+                                return a.localeCompare(b);
+                            }
+                        }
+                    },
+                    { 
+                        name: "Org", 
+                        width: "80px",
+                        formatter: (cell) => {
+                            if (!cell || cell === "---") return "";
+                            const bg = MLB_COLORS[cell] || '#374151';
+                            // Using both base and org classes
+                            return gridjs.html(`<span class="base-pill org-pill" style="background-color: ${bg}">${cell}</span>`);
+                        }
+                    },
+                    { 
+                        name: "Team", 
+                        width: "auto",
+                        formatter: (cell) => gridjs.html(`<span class="text-slate-400 italic">${cell}</span>`)
+                    }
                 ],
-                data: data.map(r => [
-                    r.Player, 
-                    r.Pos, 
-                    r.Org, 
-                    r.Team
-                ]),
-                search: true,
-                sort: true,
-                pagination: { limit: 25 }
+                data: data.map(r => [r.Player, r.Pos, r.Org, r.Team]),
+                language: {
+                    'search': {
+                        'placeholder': '🔍 Search...'
+                    }
+                }
             }).render(document.getElementById("table-wrapper"));
         }
 
