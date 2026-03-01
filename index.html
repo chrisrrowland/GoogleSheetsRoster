@@ -62,21 +62,21 @@
         0. THEME VARIABLES (Injected from config.json)
         ============================================================ */
         :root {
-            --primary-bg: #0f172a;
-            --card-bg: #1e293b;
+            --page-bg: #0f172a;
+            --surface-bg: #1e293b;
             --accent: #60a5fa;
             --border: #334155;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
+            --text-primary: #ffffff;
+            --text-secondary: color-mix(in srgb, var(--text-primary) 55%, transparent);
         }
 
         /* ============================================================
         1. GLOBAL RESET & LAYOUT
         ============================================================ */
-        body { 
-            background-color: var(--primary-bg); 
-            color: var(--text-main); 
-            font-family: 'Roboto', sans-serif; 
+        body {
+            background-color: var(--page-bg);
+            color: var(--text-primary);
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -106,15 +106,15 @@
         2. DESKTOP TABLE STYLING
         ============================================================ */
         .gridjs-td {
-            background-color: var(--card-bg) !important;
-            color: var(--text-main) !important;
+            background-color: var(--surface-bg) !important;
+            color: var(--text-primary) !important;
             border: 1px solid var(--border) !important;
             font-size: 0.95rem;
             padding: 12px 15px !important;
         }
 
         .gridjs-th {
-            background-color: var(--primary-bg) !important;
+            background-color: var(--page-bg) !important;
             color: var(--accent) !important;
             border: 1px solid var(--border) !important;
             text-transform: uppercase;
@@ -144,19 +144,19 @@
         }
 
         .gridjs-search-input {
-            background-color: var(--card-bg) !important;
-            color: var(--text-main) !important;
+            background-color: var(--surface-bg) !important;
+            color: var(--text-primary) !important;
             border: 2px solid var(--border) !important;
             border-radius: 8px !important;
             padding: 10px 15px !important;
-            width: 100% !important; 
+            width: 100% !important;
             font-size: 14px !important;
         }
 
         .gridjs-search-input:focus {
             border-color: var(--accent) !important;
             outline: none !important;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
         }
 
         /* ============================================================
@@ -220,6 +220,8 @@
         5. MOBILE/TABLET RESPONSIVE (STAGGERED CARD VIEW)
         ============================================================ */
         @media (max-width: 1024px) {
+    thead { display: none !important; }
+
     /* 1. Define the Card Grid */
     .gridjs-tr {
         display: grid !important;
@@ -227,7 +229,7 @@
         grid-template-rows: repeat(3, auto) !important;
         padding: 12px 16px;
         gap: 4px 12px;
-        background-color: var(--card-bg);
+        background-color: var(--surface-bg);
         border: 1px solid var(--border);
         margin-bottom: 12px;
         border-radius: 12px;
@@ -253,34 +255,34 @@
 
     /* 4. Column & Row Placement */
     
-    /* Player Name (Top Left) */
+    /* Player Name (Full Top Row) */
     .gridjs-td:nth-child(1) {
-        grid-column: 1;
+        grid-column: 1 / -1;
         grid-row: 1;
         font-weight: 700;
         font-size: 1.1rem;
         white-space: nowrap;
     }
 
-    /* ORG Pill (Top Right) */
-    .gridjs-td:nth-child(3) {
-        grid-column: 2;
-        grid-row: 1;
-        justify-content: flex-end;
+    /* POS Pills (Middle Left) */
+    .gridjs-td:nth-child(2) {
+        grid-column: 1;
+        grid-row: 2;
+        justify-content: flex-start;
     }
 
-    /* POS Pills (Middle Right) */
-    .gridjs-td:nth-child(2) {
+    /* ORG Pill (Middle Right) */
+    .gridjs-td:nth-child(3) {
         grid-column: 2;
         grid-row: 2;
         justify-content: flex-end;
     }
 
-    /* Team Name (Bottom Left) */
+    /* Team Name (Full Bottom Row, muted) */
     .gridjs-td:nth-child(4) {
-        grid-column: 1;
+        grid-column: 1 / -1;
         grid-row: 3;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         font-size: 0.9rem;
     }
 }
@@ -294,22 +296,62 @@
         }
 
         .gridjs-pagination .gridjs-summary {
-            color: var(--text-muted) !important;
+            color: var(--text-secondary) !important;
+        }
+
+        .gridjs-pages button {
+            background-color: var(--surface-bg) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .gridjs-pages button:hover:not([disabled]):not(.gridjs-currentPage) {
+            background-color: var(--border) !important;
+        }
+
+        .gridjs-pages button.gridjs-currentPage {
+            background-color: var(--accent) !important;
+            color: var(--page-bg) !important;
+            border-color: var(--accent) !important;
+            font-weight: 700;
+        }
+
+        .gridjs-pages button[disabled] {
+            color: var(--text-secondary) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* ============================================================
+        7. HEADER CHROME
+        ============================================================ */
+        #league-title {
+            color: var(--text-primary);
+            text-decoration-color: var(--accent);
+        }
+
+        #status {
+            background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+            color: var(--accent);
+            border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+
+        #last-updated {
+            color: var(--text-secondary);
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4 md:p-8 font-sans">
+<body class="min-h-screen p-4 md:p-8 font-sans">
 
     <div class="max-w-6xl mx-auto">
         <header class="mb-10 text-center">
-            <h1 id="league-title" class="text-4xl font-bold tracking-tight text-white mb-2 underline decoration-blue-500 decoration-4 underline-offset-8">
+            <h1 id="league-title" class="text-4xl font-bold tracking-tight mb-2 underline decoration-4 underline-offset-8">
                 League Rosters
             </h1>
             <div id="status-container" class="mt-4 flex flex-col items-center gap-2">
-                <span id="status" class="inline-block px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-blue-900/30 text-blue-400 border border-blue-800">
+                <span id="status" class="inline-block px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest border">
                     Connecting to Data Source...
                 </span>
-                <span id="last-updated" class="text-[10px] text-slate-500 font-mono uppercase tracking-tight"></span>
+                <span id="last-updated" class="text-[10px] font-mono uppercase tracking-tight"></span>
             </div>
         </header>
 
@@ -326,17 +368,18 @@
          */
         async function init() {
         try {
-            const configResponse = await fetch(`config.json?v=${new Date().getTime()}`);
+            // This will only change the URL once every 60 seconds
+            const minuteStamp = Math.floor(Date.now() / 60000);
+            const configResponse = await fetch(`config.json?v=${minuteStamp}`);
             const config = await configResponse.json();
             
             if (config.theme) {
                 const root = document.documentElement;
-                root.style.setProperty('--primary-bg', config.theme.primaryBg);
-                root.style.setProperty('--card-bg', config.theme.cardBg);
-                root.style.setProperty('--accent', config.theme.accentBlue);
-                root.style.setProperty('--border', config.theme.borderSlate);
-                root.style.setProperty('--text-main', config.theme.textMain);
-                root.style.setProperty('--text-muted', config.theme.textMuted);
+                root.style.setProperty('--page-bg', config.theme.pageBg);
+                root.style.setProperty('--surface-bg', config.theme.surfaceBg);
+                root.style.setProperty('--accent', config.theme.accent);
+                root.style.setProperty('--border', config.theme.border);
+                root.style.setProperty('--text-primary', config.theme.textPrimary);
             }
 
             // Update Title
@@ -409,7 +452,7 @@
                     { 
                         name: "Player", 
                         width: "200px",
-                        formatter: (cell) => gridjs.html(`<span class="font-bold text-white">${cell}</span>`)
+                        formatter: (cell) => gridjs.html(`<span class="font-bold">${cell}</span>`)
                     },
                     { 
                         name: "Pos", 
@@ -463,7 +506,7 @@
                     { 
                         name: "Team", 
                         width: "auto",
-                        formatter: (cell) => gridjs.html(`<span class="text-slate-400 italic">${cell}</span>`)
+                        formatter: (cell) => gridjs.html(`<span style="color: var(--text-primary);">${cell}</span>`)
                     }
                 ],
                 data: data.map(r => [r.Player, r.Pos, r.Org, r.Team]),
