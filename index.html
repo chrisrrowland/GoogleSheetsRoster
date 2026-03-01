@@ -107,39 +107,21 @@
          */
         function renderTable(data) {
             new gridjs.Grid({
-                // Adjust column names to match your Google Sheet headers EXACTLY
                 columns: [
-                    { name: "Player", width: "35%", sort: true },
-                    { name: "Team", width: "30%", sort: true },
-                    { name: "Org", width: "15%", sort: true },
-                    { name: "Pos", width: "20%", sort: true }
+                    { name: "Player", width: "35%" },
+                    { name: "Pos", width: "15%" },
+                    { name: "Org", width: "15%" },
+                    { name: "Team", width: "35%" }
                 ],
-                // Map the rows from the TSV to the Grid.js format
                 data: data.map(r => [
-                    r.Player || "—", 
-                    r.Team || "—", 
-                    r.Org || "—", 
-                    r.Pos || "—"
+                    r.Player, 
+                    r.Pos, 
+                    r.Org, 
+                    r.Team
                 ]),
-                search: {
-                    enabled: true,
-                    placeholder: "🔍 Search name, owner, or MLB team..."
-                },
+                search: true,
                 sort: true,
-                pagination: {
-                    limit: 20,
-                    summary: true
-                },
-                resizable: true,
-                language: {
-                    'search': { 'placeholder': '🔍 Search...' },
-                    'pagination': {
-                        'previous': '⬅️',
-                        'next': '➡️',
-                        'showing': 'Showing',
-                        'results': () => 'players'
-                    }
-                }
+                pagination: { limit: 25 }
             }).render(document.getElementById("table-wrapper"));
         }
 
