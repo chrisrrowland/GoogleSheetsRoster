@@ -76,43 +76,31 @@
          * 1. INITIALIZE DATA FETCH
          */
         async function init() {
-            try {
-                // Fetch the local config.json file
-                const configResponse = await fetch('config.json');
-                if (!configResponse.ok) throw new Error("Could not find config.json");
-                
-                const config = await configResponse.json();
-                
-                // Set UI elements from config
-                document.title = config.leagueName + " | Rosters";
-                document.getElementById('league-title').innerText = config.leagueName;
-
-                // Parse the TSV link provided in config
-                Papa.parse(config.sheetTsvUrl, {
-                    download: true,
-                    header: true,
-                    delimiter: "\t", // Crucial for TSV files
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        // Filter out rows that don't have a Player name (handles empty sheet rows)
-                        const cleanData = results.data.filter(row => row.Player && row.Player.trim() !== "");
-                        
-                        renderTable(cleanData);
-                        
-                        // Update status
-                        const seasonText = config.season ? `Season: ${config.season}` : 'Live Data';
-                        document.getElementById('status').innerText = `✓ Connected | ${seasonText}`;
-                    },
-                    error: function(err) {
-                        document.getElementById('status').innerText = "TSV Fetch Error";
-                        console.error(err);
-                    }
-                });
-            } catch (err) {
-                document.getElementById('status').innerText = "Config Load Error";
-                console.error(err);
-            }
+        try {
+            const configResponse = await fetch('config.json');
+            const config = await configResponse.json();
+            
+            // Update Title
+            document.title = config.leagueName;
+            document.getElementById('league-title').innerText = config.leagueName;
+    
+            Papa.parse(config.sheetTsvUrl, {
+                download: true,
+                header: true,
+                delimiter: "\t",
+                skipEmptyLines: true,
+                complete: function(results) {
+                    // Logic: Only keep rows where "Player" has text
+                    const cleanData = results.data.filter(row => row.Player && row.Player.trim() !== "");
+                    renderTable(cleanData);
+                    document.getElementById('status').innerText = "✓ Data Live";
+                }
+            });
+        } catch (err) {
+            document.getElementById('status').innerText = "Error loading config.json";
+            console.error("Initialization error:", err);
         }
+    }
 
         /**
          * 2. RENDER THE INTERACTIVE TABLE
