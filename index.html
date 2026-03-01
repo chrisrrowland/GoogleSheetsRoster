@@ -217,58 +217,73 @@
         }
 
         /* ============================================================
-        5. MOBILE/TABLET RESPONSIVE (STACKED VIEW)
+        5. MOBILE/TABLET RESPONSIVE (STAGGERED CARD VIEW)
         ============================================================ */
         @media (max-width: 1024px) {
-            /* Hide table headers in card mode */
-            .gridjs-thead { display: none !important; }
+    /* 1. Define the Card Grid */
+    .gridjs-tr {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important; 
+        grid-template-rows: repeat(3, auto) !important;
+        padding: 12px 16px;
+        gap: 4px 12px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border);
+        margin-bottom: 12px;
+        border-radius: 12px;
+    }
 
-            /* Turn the row into a grid card */
-            .gridjs-tr {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr; 
-                padding: 12px 8px !important;
-                background-color: var(--card-bg) !important;
-                border: 1px solid var(--border) !important;
-                margin-bottom: 12px !important;
-                border-radius: 12px !important;
-                /* Give the card a bit of a lift */
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-            }
+    /* 2. Reset the Cell Behavior */
+    .gridjs-td {
+        display: flex !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        
+        /* Ensure the cell uses the space the Grid provides */
+        width: 100% !important; 
+        min-width: 0 !important; 
+    }
 
-            /* Default cell cleanup */
-            .gridjs-td {
-                border: none !important;
-                background: transparent !important;
-                display: block !important;
-                padding: 4px 10px !important;
-            }
+    /* 3. Ensure the internal wrapper doesn't restrict width */
+    .gridjs-td-content {
+        padding: 0 !important;
+        width: 100% !important;
+    }
 
-            /* FORCE Pos and Org to stay horizontal and right-aligned on the card */
-            .gridjs-td:nth-child(2), 
-            .gridjs-td:nth-child(3) { 
-                display: flex !important; 
-                justify-content: flex-end !important; 
-                grid-column: 2; /* Right column of the card */
-            }
+    /* 4. Column & Row Placement */
+    
+    /* Player Name (Top Left) */
+    .gridjs-td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+        font-weight: 700;
+        font-size: 1.1rem;
+        white-space: nowrap;
+    }
 
-            /* Player Name Header in Card */
-            .gridjs-td:nth-child(1) { 
-                grid-column: 1;
-                font-weight: 700 !important;
-                font-size: 1.1rem;
-            }
+    /* ORG Pill (Top Right) */
+    .gridjs-td:nth-child(3) {
+        grid-column: 2;
+        grid-row: 1;
+        justify-content: flex-end;
+    }
 
-            /* Team Name Subtext in Card */
-            .gridjs-td:nth-child(4) { 
-                grid-column: 1; 
-                grid-row: 2; 
-                color: var(--text-muted) !important;
-                font-size: 0.9rem;
-                font-style: italic;
-                padding-top: 8px !important;
-            }
-        }
+    /* POS Pills (Middle Right) */
+    .gridjs-td:nth-child(2) {
+        grid-column: 2;
+        grid-row: 2;
+        justify-content: flex-end;
+    }
+
+    /* Team Name (Bottom Left) */
+    .gridjs-td:nth-child(4) {
+        grid-column: 1;
+        grid-row: 3;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+}
 
         /* ============================================================
         6. FOOTER / PAGINATION
